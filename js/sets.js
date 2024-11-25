@@ -1,7 +1,7 @@
 
 sitenome = `EduMapa`;
 
-endereco = `https://wantu.net.br/edumapa/`;
+endereco = `https://edumapa.github.io/`;
 
 localfb = `Santa Rita do Sapucaí`;
 
