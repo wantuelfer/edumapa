@@ -110,6 +110,7 @@ function terchamajson(resp) {
 function escrevelista(){
   let txt = `<div class="container" >
   <h1>Consulta para ${consultajson[apinomes.cidade]} - ${consultajson[apinomes.estado]}</h1>
+  <div class="corpo" id="div-estatisticas-municipio"></div>
   <div class="corpo" >
     <div class="corpo" id="div-mapa">
       <h2>Mapa</h2>
@@ -124,8 +125,7 @@ function escrevelista(){
       <div class="central" id="div-lista-escolas" ></div>
       <h3>Outras escolas no município</h3>
       <div class="central" id="div-lista-escolas-f" ></div>
-    </div>
-    <div class="corpo" id="div-estatisticas-municipio"></div>
+    </div>    
   </div>
   `;
 
