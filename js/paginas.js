@@ -280,7 +280,8 @@ function escrevelista2(){
             <p></p>
             <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
             `;
-            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']}).addTo(map).bindPopup(txtpopup);
+            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']});
+            mvalendo.bindPopup(txtpopup);
             markers.addLayer(mvalendo);  
             zoomrecente = [dados[i].latitude, dados[i].longitude];
           }
@@ -297,7 +298,8 @@ function escrevelista2(){
             <p></p>
             <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
             `;
-            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']}).addTo(map).bindPopup(txtpopup);
+            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']});
+            mvalendo.bindPopup(txtpopup);
             markers.addLayer(mvalendo); 
           }
       }
