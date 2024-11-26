@@ -212,7 +212,6 @@ function escrevelista2(){
   let txtescolas = ``;
   let txtescolasf = ``;
   let bairrocep = trata(consultajson[apinomes.bairro]);
-  tampop = 0;
 
   let estmun = {
     "tamanho" : 0,
