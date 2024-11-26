@@ -104,14 +104,24 @@ function terchamajson(resp) {
     else{
         escreve(pgerro(`Não foi encontrado o endereço. Confira o CEP digitado e tente novamente!`));
     }
-    
+
 }
 
 function escrevelista(){
   let txt = `<div class="container" >
   <h1>Consulta para ${consultajson[apinomes.cidade]} - ${consultajson[apinomes.estado]}</h1>
-  <div class="corpo" id="div-estatisticas-municipio"></div>
+  <div class="corpo" id="div-estatisticas-municipio" style="border-bottom: 2px solid var(--font-cor2); margin-bottom: 15px;" ></div>
   <div class="corpo" >
+    <div class="corpo" onchange="escrevelista2()" >
+    <input type="checkbox" id="escolas-federal" checked >
+    <label for="escolas-federal"> Federais</label> |
+    <input type="checkbox" id="escolas-estadual" checked >
+    <label for="escolas-estadual"> Estaduais</label> |
+    <input type="checkbox" id="escolas-municipal" checked >
+    <label for="escolas-municipal"> Municipais</label> |
+    <input type="checkbox" id="escolas-particular" checked >
+    <label for="escolas-particular"> Particulares</label>
+    </div>
     <div class="corpo" id="div-mapa">
       <h2>Mapa</h2>
       <div id="map" class="corpo" style="height: 300px; margin-bottom: 30px;" ></div>
@@ -125,35 +135,16 @@ function escrevelista(){
       <div class="central" id="div-lista-escolas" ></div>
       <h3>Outras escolas no município</h3>
       <div class="central" id="div-lista-escolas-f" ></div>
-    </div>    
+    </div>
   </div>
   `;
 
   escreve(txt);
-  
-  let txtescolas = ``;
-  let txtescolasf = ``;
-  let bairrocep = trata(consultajson[apinomes.bairro]);
-  let tampop = 0;
-  
-  let estmun = {
-    "tamanho" : 0,
-    "Federal" : 0,
-    "Estadual" : 0,
-    "Municipal" : 0,
-    "Privada" : 0,
-    "semagua" : 0,
-    "semenergia" : 0,
-    "semesgoto" : 0,
-    "semideb" : 0,
-    "semgeo" : 0
-  };
+  tnpagina();
 
-  let contideb = 0;
-  let somaideb = 0;
   let latp = -22.2443;
   let lonp = -45.7230;
-  
+
   let qqcoisa = `${consultajson[apinomes.ibge]}05`;
   if(cidadesjs[qqcoisa]){
     tampop = parseInt(cidadesjs[`${consultajson[apinomes.ibge]}05`][`pop_2010`]);
@@ -191,6 +182,48 @@ function escrevelista(){
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
+
+  escrevelista2();
+}
+
+function escrevelista2(){
+
+  let consultaescolas = [];
+
+  if(document.getElementById(`escolas-federal`).checked){
+    consultaescolas.push(`Federal`);
+  }
+  if(document.getElementById(`escolas-estadual`).checked){
+    consultaescolas.push(`Estadual`);
+  }
+  if(document.getElementById(`escolas-municipal`).checked){
+    consultaescolas.push(`Municipal`);
+  }
+  if(document.getElementById(`escolas-particular`).checked){
+    consultaescolas.push(`Privada`);
+  }
+
+  let txtescolas = ``;
+  let txtescolasf = ``;
+  let bairrocep = trata(consultajson[apinomes.bairro]);
+  let tampop = 0;
+
+  let estmun = {
+    "tamanho" : 0,
+    "Federal" : 0,
+    "Estadual" : 0,
+    "Municipal" : 0,
+    "Privada" : 0,
+    "semagua" : 0,
+    "semenergia" : 0,
+    "semesgoto" : 0,
+    "semideb" : 0,
+    "semgeo" : 0
+  };
+
+  let contideb = 0;
+  let somaideb = 0;
+
 
   for(let i in dados){
     for(let l in dados[i].LISTA_INFRAESTRUTURAS){
@@ -234,29 +267,33 @@ function escrevelista(){
          }
     }
       if(dados[i].NO_MUNICIPIO === `${consultajson[apinomes.cidade]}` && dados[i].SG_UF === `${consultajson[apinomes.estado]}` && trata(dados[i].NO_BAIRRO) === bairrocep) {
-        txtescolas += `<a href="javascript:pgescola(${i})" class="bt-download-pq" style="color: #000000;" >${dados[i].NO_ENTIDADE}</a><br>`;
-        if(dados[i].longitude !== null){
-          let txtpopup = `<h1>${dados[i].NO_ENTIDADE}</h1>
-          <p></p>
-          <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
-          `;
-          L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']}).addTo(map).bindPopup(txtpopup);
-            map.setView([dados[i].latitude, dados[i].longitude], 15);
+        if(consultaescolas.indexOf(dados[i].DEPENDENCIA) !== -1){
+          txtescolas += `<a href="javascript:pgescola(${i})" class="bt-download-pq" style="color: #000000;" >${dados[i].NO_ENTIDADE}</a><br>`;
+          if(dados[i].longitude !== null){
+            let txtpopup = `<h1>${dados[i].NO_ENTIDADE}</h1>
+            <p></p>
+            <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
+            `;
+            L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']}).addTo(map).bindPopup(txtpopup);
+              map.setView([dados[i].latitude, dados[i].longitude], 15);
+          }
         }
-        else{
+        if(dados[i].longitude === null){
             estmun.semgeo++;
         }
       }
       else {
-       txtescolasf += `<a href="javascript:pgescola(${i})" class="bt-download-pq" style="color: #000000;" >${dados[i].NO_ENTIDADE}</a><br>`;
-        if(dados[i].longitude !== null){
-          let txtpopup = `<h1>${dados[i].NO_ENTIDADE}</h1>
-          <p></p>
-          <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
-          `;
-          L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']}).addTo(map).bindPopup(txtpopup);
-        }
-        else{
+       if(consultaescolas.indexOf(dados[i].DEPENDENCIA) !== -1){
+         txtescolasf += `<a href="javascript:pgescola(${i})" class="bt-download-pq" style="color: #000000;" >${dados[i].NO_ENTIDADE}</a><br>`;
+          if(dados[i].longitude !== null){
+            let txtpopup = `<h1>${dados[i].NO_ENTIDADE}</h1>
+            <p></p>
+            <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
+            `;
+            L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']}).addTo(map).bindPopup(txtpopup);
+          }
+      }
+        if(dados[i].longitude === null){
             estmun.semgeo++;
         }
       }
@@ -343,6 +380,7 @@ function pgindex(){
   </div>`;
 
   escreve(txt);
+  tnpagina();
 }
 
 function pgescola(i){
@@ -509,7 +547,7 @@ function pgescola(i){
   </div>`;
 
   escreve(txt);
-  scroll(0,0);
+  tnpagina();
 
   if(dados[i].latitude !== null){
     map = L.map('map').setView([-22.2443, -45.7230], 12);
@@ -578,5 +616,5 @@ Junte-se a nós nessa missão e faça parte da transformação da educação pú
 `;
 
   escreve(txt);
-  scroll(0,0);
+  tnpagina();
 }
