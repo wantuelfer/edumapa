@@ -7,6 +7,9 @@ var ctxq;
 var chart;
 var icones = {};
 var markerArray = [];
+var tampop;
+var markers;
+var zoomrecente = [];
 var dados = {};
 
 var listainfra = [];
@@ -183,10 +186,13 @@ function escrevelista(){
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
+  markers = L.markerClusterGroup();
+
   escrevelista2();
 }
 
 function escrevelista2(){
+  markers.clearLayers();
 
   let consultaescolas = [];
 
@@ -206,7 +212,7 @@ function escrevelista2(){
   let txtescolas = ``;
   let txtescolasf = ``;
   let bairrocep = trata(consultajson[apinomes.bairro]);
-  let tampop = 0;
+  tampop = 0;
 
   let estmun = {
     "tamanho" : 0,
@@ -274,8 +280,9 @@ function escrevelista2(){
             <p></p>
             <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
             `;
-            L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']}).addTo(map).bindPopup(txtpopup);
-              map.setView([dados[i].latitude, dados[i].longitude], 15);
+            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['verde']}).addTo(map).bindPopup(txtpopup);
+            markers.addLayer(mvalendo);  
+            zoomrecente = [dados[i].latitude, dados[i].longitude];
           }
         }
         if(dados[i].longitude === null){
@@ -290,7 +297,8 @@ function escrevelista2(){
             <p></p>
             <p><a href="javascript:pgescola(${i})" >Veja mais</a></p>
             `;
-            L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']}).addTo(map).bindPopup(txtpopup);
+            let mvalendo = L.marker([dados[i].latitude, dados[i].longitude], {icon: icones['vermelho']}).addTo(map).bindPopup(txtpopup);
+            markers.addLayer(mvalendo); 
           }
       }
         if(dados[i].longitude === null){
@@ -306,8 +314,8 @@ function escrevelista2(){
     txtescolasf = `<h2>Desculpe! Não há escolas cadastradas na nossa base dados para o seu CEP.</h2>`;
   }
 
-  group = L.featureGroup(markerArray);
-//  map.fitBounds(group.getBounds());
+  map.addLayer(markers);
+  map.setView(zoomrecente, 15);
 
   escreve(txtescolas,`div-lista-escolas`);
   escreve(txtescolasf,`div-lista-escolas-f`);
